@@ -1,0 +1,10 @@
+EXPLAIN
+"-> Limit: 15 row(s)  (actual time=126.560..126.564 rows=15 loops=1)
+    -> Filter: (count(s.StudentID) > 1)  (actual time=126.559..126.562 rows=15 loops=1)
+        -> Table scan on <temporary>  (actual time=0.001..0.002 rows=15 loops=1)
+            -> Aggregate using temporary table  (actual time=126.556..126.558 rows=15 loops=1)
+                -> Inner hash join (no condition)  (cost=28397.82 rows=283500) (actual time=0.480..18.648 rows=283500 loops=1)
+                    -> Index scan on s using student_asc  (cost=0.14 rows=630) (actual time=0.043..0.513 rows=630 loops=1)
+                    -> Hash
+                        -> Index scan on r using restriction_desc  (cost=45.75 rows=450) (actual time=0.020..0.074 rows=450 loops=1)
+"

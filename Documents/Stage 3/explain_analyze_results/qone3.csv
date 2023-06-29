@@ -1,0 +1,26 @@
+EXPLAIN
+"-> Limit: 15 row(s)  (cost=18917924.39 rows=15) (actual time=90123.936..90123.938 rows=15 loops=1)
+    -> Inner hash join (no condition)  (cost=18917924.39 rows=189000000) (actual time=90123.935..90123.936 rows=15 loops=1)
+        -> Index scan on Menu using Meals  (cost=0.01 rows=1200) (actual time=0.055..0.055 rows=1 loops=1)
+        -> Hash
+            -> Inner hash join (no condition)  (cost=15773.52 rows=157500) (actual time=90113.888..90114.150 rows=2313 loops=1)
+                -> Index scan on h using name_desc  (cost=0.37 rows=750) (actual time=0.026..0.084 rows=12 loops=1)
+                -> Hash
+                    -> Filter: <in_optimizer>(meal.MealID,meal.MealID in (select #2))  (cost=21.25 rows=210) (actual time=90112.707..90113.114 rows=210 loops=1)
+                        -> Index scan on Meal using menu_asc  (cost=21.25 rows=210) (actual time=0.016..0.082 rows=210 loops=1)
+                        -> Select #2 (subquery in condition; run only once)
+                            -> Filter: ((meal.MealID = `<materialized_subquery>`.MealID))  (actual time=0.001..0.001 rows=1 loops=211)
+                                -> Limit: 1 row(s)  (actual time=0.001..0.001 rows=1 loops=211)
+                                    -> Index lookup on <materialized_subquery> using <auto_distinct_key> (MealID=meal.MealID)  (actual time=0.000..0.000 rows=1 loops=211)
+                                        -> Materialize with deduplication  (actual time=427.075..427.075 rows=1 loops=211)
+                                            -> Filter: (count(0) > 1)  (actual time=90112.575..90112.623 rows=210 loops=1)
+                                                -> Table scan on <temporary>  (actual time=0.002..0.015 rows=210 loops=1)
+                                                    -> Aggregate using temporary table  (actual time=90112.572..90112.601 rows=210 loops=1)
+                                                        -> Inner hash join (no condition)  (cost=18916849.83 rows=189000000) (actual time=56.427..16704.761 rows=189000000 loops=1)
+                                                            -> Index scan on Menu using Meals  (cost=0.01 rows=1200) (actual time=0.025..1.419 rows=1200 loops=1)
+                                                            -> Hash
+                                                                -> Inner hash join (no condition)  (cost=15773.52 rows=157500) (actual time=0.160..9.916 rows=157500 loops=1)
+                                                                    -> Index scan on DiningHall using name_desc  (cost=0.37 rows=750) (actual time=0.009..0.411 rows=750 loops=1)
+                                                                    -> Hash
+                                                                        -> Index scan on Meal using menu_asc  (cost=21.25 rows=210) (actual time=0.008..0.032 rows=210 loops=1)
+"
